@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -9,7 +10,9 @@ class AuthController extends Controller
 {
     public function register()
     {
-        return view('register');
+        $role = Role::get();
+        // select * from roles
+        return view('register',["roles"=>$role]);
     }
 
     public function login()
@@ -22,13 +25,15 @@ class AuthController extends Controller
         $validatedDATA = request()->validate([
             'name' => 'required',
             'email' => 'required',
+            'role_id' => 'required',
             'password' => 'required'
         ]);
 
         $user = User::create($validatedDATA);
+        // insert into bla bla bla
 
         auth()->login($user);
-        return redirect('/prouducts/index');
+        return redirect('/welcome');
         
     }
 
@@ -36,11 +41,12 @@ class AuthController extends Controller
     {
         $validatedDATA = request()->validate([
             'email' => 'required',
-            'password' => 'required'
+            'password' => 'required',
+            'role_id' => 'required'
         ]);
         
         if (auth()->attempt($validatedDATA)) {
-            return redirect('/prouducts/index');
+            return redirect('/welcome');
         }
 
         return back();
@@ -49,6 +55,6 @@ class AuthController extends Controller
     public function logout()
     {
         auth()->logout();
-        return redirect('/');
+        return redirect('/login');
     }
 }
